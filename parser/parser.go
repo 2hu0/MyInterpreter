@@ -151,6 +151,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	// 注册一个解析IF的函数
 	p.registerPrefix(token.IF, p.parseIfExpression)
+	// 注册一个解析String的函数
+	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	//注册一个前缀解析函数
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
@@ -440,4 +442,8 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	}
 
 	return args
+}
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }

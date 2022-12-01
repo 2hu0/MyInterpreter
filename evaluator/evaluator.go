@@ -38,6 +38,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	// 表达式
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
+	// 解析String
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 	// 解析bool
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
@@ -143,7 +146,7 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	val, ok := env.Get(node.Value)
 	if !ok {
-		return newError("Identifier not fount: " + node.Value)
+		return newError("identifier not found: " + node.Value)
 	}
 	return val
 }
@@ -218,7 +221,8 @@ func evalInfixExpression(
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
-
+	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+		return evalStringInfixExpression(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
@@ -230,6 +234,16 @@ func evalInfixExpression(
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
+}
+
+func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s",
+			left.Type(), operator, right.Type())
+	}
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+	return &object.String{Value: leftVal + rightVal}
 }
 
 // 解析Integer
