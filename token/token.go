@@ -44,6 +44,9 @@ const (
 	RETURN   = "RETURN"
 	//字符串
 	STRING = "STRING"
+	//中括号
+	LBRACKET = "["
+	RBRACKET = "]"
 )
 
 // 关键字集合
