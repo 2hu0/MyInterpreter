@@ -17,6 +17,7 @@ const (
 	PRODUCT     // *
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
+	INDEX       //array[index]
 )
 
 // 优先级表
@@ -30,6 +31,7 @@ var precedences = map[token.TokenType]int{
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
+	token.LBRACKET: INDEX,
 }
 
 type Parser struct {
@@ -163,9 +165,9 @@ func New(l *lexer.Lexer) *Parser {
 	//注册一个解析数组的函数
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	//解析索引
-	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
-	// 注册一个中缀解析函数
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
+	// 注册一个中缀解析函数
+	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
