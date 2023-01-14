@@ -140,6 +140,7 @@ const (
 	BUILTIN_OBJ = "BUILTIN"
 )
 
+// 内置函数
 type Builtin struct {
 	Fn BuiltinFunction
 }
