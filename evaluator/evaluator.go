@@ -118,17 +118,23 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return evalIndexExpression(left, index)
 
-	//解析hash
+	//解析hash字面量
 	case *ast.HashLiteral:
 		return evalHashLiteral(node, env)
 	}
+
 	return nil
 }
 
 func evalIndexExpression(left object.Object, index object.Object) object.Object {
 	switch {
+	//解析数组索引
 	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
 		return evalArrayIndexExpression(left, index)
+	//解析hash索引
+	case left.Type() == object.HASH_OBJ:
+		return evalHashIndexExpression(left, index)
+
 	default:
 		return newError("index operator not supported: %s", left.Type())
 	}
@@ -405,6 +411,7 @@ func evalHashLiteral(
 	return &object.Hash{Pairs: pairs}
 }
 
+// hash索引求值
 func evalHashIndexExpression(hash, index object.Object) object.Object {
 	hashObject := hash.(*object.Hash)
 
